@@ -2,12 +2,12 @@ import sirv from 'sirv';
 import polka from 'polka';
 import compression from 'compression';
 import * as sapper from '@sapper/server';
-const {json} = require('body-parser');
 import session from 'express-session';
-import sessionFileStore from 'session-file-store'
+import sessionFileStore from 'session-file-store';
 
 const { PORT, NODE_ENV } = process.env;
 const dev = NODE_ENV === 'development';
+const { json } = require('body-parser');
 
 const FileStore = sessionFileStore(session);
 
@@ -17,14 +17,21 @@ polka() // You can also use Express
 		compression({ threshold: 0 }),
 		json(),
 		sirv('static', { dev }),
-		sapper.middleware({
-			secret: 'svelte',
+		session({
+			secret: 'hehehe',
 			resave: false,
 			saveUninitialized: true,
 			cookie: {
 				maxAge: 31536000
-			},store: new FileStore({
+			},
+			store: new FileStore({
 				path: `.sessions`
+			}),
+		}),
+		sapper.middleware({
+			session: req => ({
+				user: req.session && req.session.user,
+				token :req.session && req.session.token
 			})
 		})
 	)
