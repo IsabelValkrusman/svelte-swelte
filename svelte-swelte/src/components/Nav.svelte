@@ -10,7 +10,7 @@
 
 		async function logout(){
 			await post(`auth/logout`);
-			$session.user= null;
+			$session.token= null;
 			goto('/')
 		}
 </script>
